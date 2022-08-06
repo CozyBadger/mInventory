@@ -13,6 +13,6 @@ Session(app)
 
 
 @app.route("/")
-def hello_world():
+def root():
     app.logger.info("I am alive!")
-    return render_template("storage.html")
+    return render_template("index.html")
