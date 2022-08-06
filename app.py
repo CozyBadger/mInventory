@@ -12,7 +12,6 @@ app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
 
-
 @app.route("/")
 def hello_world():
     app.logger.info("I am alive!")

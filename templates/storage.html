@@ -8,7 +8,17 @@ Storage
 
 
 {% block main %}
+	<div class="text-center">
+		<button class="btn btn-primary" name="add_item" type="button">+ add item</button>
 
-<h1>Hi</h1>
+		{% if storage_items is defined and storage_items|length > 0 %}
+
+		{% else %}
+
+			<h1 class="mt-5">Storage is empty</h1>
+
+		{% endif %}
+
+	</div>
 
 {% endblock %}
