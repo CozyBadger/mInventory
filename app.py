@@ -1,12 +1,13 @@
-# Public packages
+# Public imports
 from flask import Flask, flash, redirect, render_template, request, session
 from flask_session import Session
 
-import re
+import sqlite3
 
-# Local packages
-from helpers import validate_string
+# Local imports
+from helpers import db_connect, validate_string
 
+# Configure the Flask application
 app = Flask(__name__)
 
 # Ensure templates are auto-reloaded
@@ -17,11 +18,19 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
+# Local database
+db = "minventory.db"
 
 @app.route("/")
 def root():
     app.logger.info("I am alive!")
-    return render_template("index.html")
+    conn = db_connect(db)
+    cur = conn.cursor()
+    entries = cur.execute("SELECT * FROM storage;").fetchall()
+
+    conn.close()
+    app.logger.info(f"Items returned: {entries}")
+    return render_template("index.html", storage_items=entries)
 
 
 @app.route("/add_item", methods=["POST"])
@@ -52,6 +61,16 @@ def add_item():
     if validate_string(item) is False or validate_string(unit) is False:
         flash("No special characters or numbers allowed for items and units", "danger")
         return redirect("/")
+
+    # Write item details to database
+    conn = db_connect(db)
+    conn.execute(
+        "INSERT INTO storage (item_name, amount, unit) VALUES (?, ?, ?)",
+        (item, amount, unit)
+    )
+
+    conn.commit()
+    conn.close()
 
     # Acknolegde success and return to root
     flash(f"Item {item} added with {amount} {unit}", "primary")

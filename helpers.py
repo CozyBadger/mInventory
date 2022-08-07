@@ -1,4 +1,15 @@
 import re
+import sqlite3
+
+def db_connect(db):
+    try:
+        connection = sqlite3.connect(db)
+    # TODO: More meaningful exception handling
+    except:
+        raise
+
+    return connection
+
 
 def validate_string(string):
     """ Check if a string only contains allowed characters

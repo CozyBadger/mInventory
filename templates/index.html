@@ -40,6 +40,24 @@ Storage
 		</div>
 
 		{% if storage_items is defined and storage_items|length > 0 %}
+		<table class="table table-striped mt-5">
+			<thead>
+				<tr>
+					<th>Item</th>
+					<th class="td-right">Amount</th>
+					<th class="td-left">Unit</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for item in storage_items %}
+					<tr>
+						<td>{{ item[1] }}</td>
+						<td class="td-right">{{ item[2] }}</td>
+						<td class="td-left">{{ item[3] }}</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
 
 		{% else %}
 
