@@ -4,4 +4,4 @@ __pycache__
 flask_session
 
 # local files
-database
+*.db
