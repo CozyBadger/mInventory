@@ -10,6 +10,22 @@
 		mInventory: {% block title %}{% endblock %}
 	</title>
 	<body>
+		{% if get_flashed_messages() %}
+			<div id="flash_messages" class="alert alert-primary fade show mb-0 text-center" role="alert">
+				{{ get_flashed_messages() | join(" ") }}
+			</div>
+			<script>
+				var flashDurationInSeconds = 5;
+				var flashContainerId = 'flash_messages';
+
+				function removeFlashMessages() {
+					document.getElementById(flashContainerId).remove();
+				}
+
+				setTimeout(removeFlashMessages, flashDurationInSeconds * 1000);
+			</script>
+		{% endif %}
+
 		<main>
 			<div class="pt-5">
 				{% block main %}{% endblock %}

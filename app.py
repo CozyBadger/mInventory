@@ -16,3 +16,20 @@ Session(app)
 def root():
     app.logger.info("I am alive!")
     return render_template("index.html")
+
+@app.route("/add_item", methods=["POST"])
+def add_item():
+    """ Add an item to the database """
+
+    item = request.form.get("item")
+    app.logger.info(f"Item from form: {item}")
+
+    amount = request.form.get("amount")
+    app.logger.info(f"Amount from form: {amount}")
+
+    unit = request.form.get("unit")
+    app.logger.info(f"Unit from form: {unit}")
+
+    flash(f"Item {item} added with {amount} {unit}")
+    return redirect("/")
+
