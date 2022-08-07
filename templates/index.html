@@ -9,7 +9,35 @@ Storage
 
 {% block main %}
 	<div class="text-center">
-		<button class="btn btn-primary" name="add_item" type="button">+ add item</button>
+		<!-- Button to add a new storage entry - opens input form as overlay -->
+		<button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#additem_modal" name="add_item" type="button">+ add item</button>
+		<div class="modal fade" id="additem_modal" tabindex="-1">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Add item to storage</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+					</div>
+					<form action="/add_item" method="post">
+						<div class="modal-body">
+							<div class="mb-3">
+								<input class="form-control" name="item" placeholder="item name" type="text">
+							</div>
+							<div class="mb-3">
+								<input class="form-control" name="amount" placeholder="amount" type="text">
+							</div>
+							<div class="mb-3">
+								<input class="form-control" name="unit" placeholder="unit" type="text">
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+							<button type="submit" class="btn btn-primary">Add item</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
 
 		{% if storage_items is defined and storage_items|length > 0 %}
 
@@ -20,5 +48,4 @@ Storage
 		{% endif %}
 
 	</div>
-
 {% endblock %}
