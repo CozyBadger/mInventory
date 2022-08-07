@@ -30,6 +30,12 @@ def add_item():
     unit = request.form.get("unit")
     app.logger.info(f"Unit from form: {unit}")
 
-    flash(f"Item {item} added with {amount} {unit}")
-    return redirect("/")
+    # Check input validity
+    if item and amount and unit:
+        pass
+    else:
+        flash("Missing required input. No item added.", "danger")
+        return redirect("/")
 
+    flash(f"Item {item} added with {amount} {unit}", "primary")
+    return redirect("/")

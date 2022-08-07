@@ -10,21 +10,27 @@
 		mInventory: {% block title %}{% endblock %}
 	</title>
 	<body>
-		{% if get_flashed_messages() %}
-			<div id="flash_messages" class="alert alert-primary fade show mb-0 text-center" role="alert">
-				{{ get_flashed_messages() | join(" ") }}
-			</div>
-			<script>
-				var flashDurationInSeconds = 5;
-				var flashContainerId = 'flash_messages';
+		{% with messages = get_flashed_messages(with_categories=true) %}
+			{% if messages %}
+				{% for category, message in messages %}
+					<div id="{{ category }}" class="alert alert-{{ category }} fade show mb-0 text-center" role="alert">
+						{{ message }}
+					</div>
+				{% endfor %}
+				<script>
+					var flashDurationInSeconds = 5;
 
-				function removeFlashMessages() {
-					document.getElementById(flashContainerId).remove();
-				}
-
-				setTimeout(removeFlashMessages, flashDurationInSeconds * 1000);
-			</script>
-		{% endif %}
+					function removeFlashMessages() {
+						const elements = document.querySelectorAll(".alert");
+						console.log(elements);
+						elements.forEach(element => {
+							element.remove();
+						});
+					}
+					setTimeout(removeFlashMessages, flashDurationInSeconds * 1000);
+				</script>
+			{% endif %}
+		{% endwith %}
 
 		<main>
 			<div class="pt-5">
