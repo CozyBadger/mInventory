@@ -8,9 +8,11 @@ Storage
 
 
 {% block main %}
-	<div class="text-center">
+	<div class="text-center px-5">
 		<!-- Button to add a new storage entry - opens input form as overlay -->
 		<button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#additem_modal" name="add_item" type="button">+ add item</button>
+
+		<!-- Popup to enter item details for adding-->
 		<div class="modal fade" id="additem_modal" tabindex="-1">
 			<div class="modal-dialog" role="document">
 				<div class="modal-content">
@@ -39,31 +41,34 @@ Storage
 			</div>
 		</div>
 
-		{% if storage_items is defined and storage_items|length > 0 %}
-		<table class="table table-striped mt-5">
-			<thead>
-				<tr>
-					<th>Item</th>
-					<th class="td-right">Amount</th>
-					<th class="td-left">Unit</th>
-				</tr>
-			</thead>
-			<tbody>
-				{% for item in storage_items %}
+		<div id="table-content">
+			{% if storage_items is defined and storage_items|length > 0 %}
+			<table class="table table-striped mt-5">
+				<thead>
 					<tr>
-						<td>{{ item[1] }}</td>
-						<td class="td-right">{{ item[2] }}</td>
-						<td class="td-left">{{ item[3] }}</td>
+						<th class="td-left">Item</th>
+						<th class="td-right">Amount</th>
+						<th class="td-left">Unit</th>
 					</tr>
-				{% endfor %}
-			</tbody>
-		</table>
+				</thead>
+				<tbody>
+					{% for item in storage_items %}
+						<tr>
+							<td class="td-left">{{ item[1] }}</td>
+							<td class="td-right">{{ item[2] }}</td>
+							<td class="td-left">{{ item[3] }}</td>
+							<td><button class="btn btn-primary btn-remove" type="button">&times;</button><td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
 
-		{% else %}
+			{% else %}
 
-			<h1 class="mt-5">Storage is empty</h1>
+				<h1 class="mt-5">Storage is empty</h1>
 
-		{% endif %}
+			{% endif %}
+		</div>
 
 	</div>
 {% endblock %}
