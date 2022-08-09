@@ -41,33 +41,37 @@ Storage
 			</div>
 		</div>
 
-		<div id="table-content">
-			{% if storage_items is defined and storage_items|length > 0 %}
-			<table class="table table-striped mt-5">
-				<thead>
-					<tr>
-						<th class="td-left">Item</th>
-						<th class="td-right">Amount</th>
-						<th class="td-left">Unit</th>
-					</tr>
-				</thead>
-				<tbody>
-					{% for item in storage_items %}
-						<tr>
-							<td class="td-left">{{ item[1] }}</td>
-							<td class="td-right">{{ item[2] }}</td>
-							<td class="td-left">{{ item[3] }}</td>
-							<td><button class="btn btn-primary btn-remove" type="button">&times;</button><td>
-						</tr>
-					{% endfor %}
-				</tbody>
-			</table>
-
-			{% else %}
-
-				<h1 class="mt-5">Storage is empty</h1>
-
-			{% endif %}
+		<div class="container"i id="table-content">
+			<div class="row justify-content-md-center">
+				<div class"col-lg-5">
+					{% if storage_items is defined and storage_items|length > 0 %}
+						<table class="table table-striped mt-5">
+							<thead>
+								<tr>
+									<th class="td-left">Item</th>
+									<th class="td-right">Amount</th>
+									<th class="td-left">Unit</th>
+									<th></th>
+								</tr>
+							</thead>
+							<tbody>
+								{% for item in storage_items %}
+									<tr>
+										<td class="td-left">{{ item.item_name }}</td>
+										<td class="td-right">{{ item.amount }}</td>
+										<td class="td-left">{{ item.unit }}</td>
+										<td>
+											<a class="btn btn-primary btn-sm" href="/remove_item?id={{ item.id }}">&times;</a>
+										</td>
+									</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+					{% else %}
+						<h1 class="mt-5">Storage is empty</h1>
+					{% endif %}
+				</div>
+			</div>
 		</div>
 
 	</div>

@@ -5,7 +5,7 @@ from flask_session import Session
 import sqlite3
 
 # Local imports
-from helpers import db_connect, validate_string
+from helpers import db_connect, format_items, validate_string
 
 # Configure the Flask application
 app = Flask(__name__)
@@ -23,14 +23,14 @@ db = "minventory.db"
 
 @app.route("/")
 def root():
-    app.logger.info("I am alive!")
+    app.logger.debug("I am alive!")
     conn = db_connect(db)
     cur = conn.cursor()
     entries = cur.execute("SELECT * FROM storage;").fetchall()
 
     conn.close()
-    app.logger.info(f"Items returned: {entries}")
-    return render_template("index.html", storage_items=entries)
+    app.logger.debug(f"Items returned: {entries}")
+    return render_template("index.html", storage_items=format_items(entries))
 
 
 @app.route("/add_item", methods=["POST"])
@@ -38,13 +38,13 @@ def add_item():
     """ Add an item to the database """
 
     item = request.form.get("item")
-    app.logger.info(f"Item from form: {item}")
+    app.logger.debug(f"Item from form: {item}")
 
     amount = request.form.get("amount")
-    app.logger.info(f"Amount from form: {amount}")
+    app.logger.debug(f"Amount from form: {amount}")
 
     unit = request.form.get("unit")
-    app.logger.info(f"Unit from form: {unit}")
+    app.logger.debug(f"Unit from form: {unit}")
 
     # Check if all inputs are given
     if not item or not amount or not unit:
@@ -75,3 +75,26 @@ def add_item():
     # Acknolegde success and return to root
     flash(f"Item {item} added with {amount} {unit}", "primary")
     return redirect("/")
+
+@app.route("/remove_item", methods=["GET", "POST"])
+def remove_item():
+    """ Remove a specified amount of an item from the database """
+    item_id = request.args.get("id")
+    app.logger.debug(f"Getting info for item id: {item_id}")
+
+    # Retrieve item information to populate form if item id is given
+    if item_id:
+        conn = db_connect(db)
+        cur = conn.cursor()
+        item_details = cur.execute("SELECT * FROM storage WHERE id = ?", item_id).fetchall()
+
+        app.logger.debug(f"Item info fetched: {item_details}")
+
+        return render_template("remove_item.html", item_details=format_items(item_details)[0])
+
+    if request.method == "POST":
+
+        flash("Item removed", "primary")
+        return redirect("/")
+
+    return render_template("remove_item.html")
