@@ -28,5 +28,5 @@ TODO: create script to automate db stuff
 or\
 `$ flask --debug run`
 
-* leave the virtual environment\
-`$ .venv/bin/deactivate`
+* leave the virtual environment when needed\
+`$ deactivate`
