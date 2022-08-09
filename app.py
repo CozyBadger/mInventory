@@ -26,7 +26,7 @@ def root():
     app.logger.debug("I am alive!")
     conn = db_connect(db)
     cur = conn.cursor()
-    entries = cur.execute("SELECT * FROM storage;").fetchall()
+    entries = cur.execute("SELECT * FROM storage").fetchall()
 
     conn.close()
     app.logger.debug(f"Items returned: {entries}")
@@ -34,7 +34,7 @@ def root():
 
 
 @app.route("/add_item", methods=["POST"])
-def add_item():
+def add_item(): 
     """ Add an item to the database """
 
     item = request.form.get("item")
@@ -86,15 +86,82 @@ def remove_item():
     if item_id:
         conn = db_connect(db)
         cur = conn.cursor()
+        # using fetchall() although ID is unique and always should return one - buut who knows?
         item_details = cur.execute("SELECT * FROM storage WHERE id = ?", item_id).fetchall()
+        conn.close()
 
         app.logger.debug(f"Item info fetched: {item_details}")
 
         return render_template("remove_item.html", item_details=format_items(item_details)[0])
 
+    # Handling POST requests
     if request.method == "POST":
+
+        item_id = request.form.get("item_id")
+        remove_amount = request.form.get("amountNumber")
+
+        # Check if required inputs are present
+        if not item_id or not remove_amount:
+            flash(f"Required input missing. No items removed.", "danger")
+            return redirect("/")
+
+        # Check if types are correct
+        try:
+            int(item_id)
+            remove_amount = int(remove_amount)
+        except ValueError:
+            flash(f"Input type error for item id or amount (not int).", "danger")
+            return redirect("/")
+
+        # Get item information if exisits
+        conn = db_connect(db)
+        cur = conn.cursor()
+        current_item = cur.execute("SELECT * FROM storage WHERE id = ?", item_id)
+        # no need to close connection yet
+
+        # return early if query did not retrieve anything
+        if current_item == []:
+            flash(f"No item with ID {item_id} found in database.", "danger")
+            return redirect("/")
+
+        current_item = format_items(current_item)[0]
+
+        try:
+            available_amount = current_item.get("amount")
+            item_name = current_item.get("item_name")
+        except:
+            # TODO create more meanigful exception handling
+            flash("Database did not return expected values", "danger")
+            return redirect("/")
+
+
+        # remove nothing if remove amount is 0 or negative
+        if remove_amount <= 0:
+            conn.close()
+            flash(f"Nothing removed from item {item_name}", "primary")
+            return redirect("/")
+
+        # remove item from storage completely if remove amount equals what is available
+        changes_made = False
+
+        if changes_made == False and available_amount - remove_amount == 0:
+            conn.execute("DELETE FROM storage WHERE id = ?", item_id)
+            changes_made = True
+        elif changes_made == False and available_amount - remove_amount > 0:
+            new_amount = available_amount - remove_amount
+            conn.execute("UPDATE storage SET amount = ? WHERE id = ?", (new_amount, item_id))
+            changes_made = True
+
+        if changes_made == True:
+            conn.commit()
+            conn.close()
+        else:
+            conn.close()
+            flash("Something went wrong when making changes to the DB", "danger")
+            return redirect("/")
 
         flash("Item removed", "primary")
         return redirect("/")
 
+    # Leaving this for GET requests
     return render_template("remove_item.html")
