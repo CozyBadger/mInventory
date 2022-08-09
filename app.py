@@ -34,8 +34,9 @@ def root():
 
 
 @app.route("/add_item", methods=["POST"])
-def add_item(): 
+def add_item():
     """ Add an item to the database """
+    # TODO: unify entries for same name items into one item / avoid double entries for same or even similar item names
 
     item = request.form.get("item")
     app.logger.debug(f"Item from form: {item}")
