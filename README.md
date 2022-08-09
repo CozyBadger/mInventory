@@ -1,4 +1,4 @@
-# mInventory
+# (WIP!) mInventory
 A simple application to manage an inventory
 
 ## Run local development environment
