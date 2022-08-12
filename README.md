@@ -7,7 +7,7 @@ A simple application to manage an inventory
 `$ sudo apt install sqlite3`
 
 * create a local db and ingest storage schema (drops table if it exists)\
-`$ sqlite3 minventory < ./schemas/storage.sql`\
+`$ sqlite3 minventory.db < ./schemas/storage.sql`\
 TODO: create script to automate db stuff
 
 ### Server
