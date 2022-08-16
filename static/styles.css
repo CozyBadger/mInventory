@@ -1,3 +1,8 @@
+.custom-drop-down {
+	background: url('images/Ic_arrow_drop_down_36px.png') no-repeat right;
+	background-size: 25px;
+	background-origin: content-box;
+}
 .td-left {
 	text-align: left;
 }

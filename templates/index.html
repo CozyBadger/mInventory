@@ -23,7 +23,14 @@ Storage
 					<form action="/add_item" method="post">
 						<div class="modal-body">
 							<div class="mb-3">
-								<input class="form-control" name="item" placeholder="item name" required type="text">
+								<input autocomplete="off" class="form-control custom-drop-down" list="item-name" name="item" placeholder="item name or select" required type="text">
+									{% if storage_items is defined and storage_items|length > 0 %}
+										<datalist id="item-name">
+											{% for item in storage_items %}
+												<option value="{{ item.item_name }}">
+											{% endfor %}
+										</datalist>
+									{% endif %}
 							</div>
 							<div class="mb-3">
 								<input class="form-control" name="amount" placeholder="amount" required type="text">
