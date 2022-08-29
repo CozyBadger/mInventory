@@ -87,8 +87,8 @@ def remove_item():
     if item_id:
         conn = db_connect(db)
         cur = conn.cursor()
-        # using fetchall() although ID is unique and always should return one - buut who knows?
-        item_details = cur.execute("SELECT * FROM storage WHERE id = ?", item_id).fetchall()
+        # using fetchall() although ID is unique and always should return one - but who knows?
+        item_details = cur.execute("SELECT * FROM storage WHERE id = (?)", (item_id,)).fetchall()
         conn.close()
 
         app.logger.debug(f"Item info fetched: {item_details}")
@@ -117,7 +117,7 @@ def remove_item():
         # Get item information if exisits
         conn = db_connect(db)
         cur = conn.cursor()
-        current_item = cur.execute("SELECT * FROM storage WHERE id = ?", item_id)
+        current_item = cur.execute("SELECT * FROM storage WHERE id = (?)", (item_id,))
         # no need to close connection yet
 
         # return early if query did not retrieve anything
@@ -146,11 +146,11 @@ def remove_item():
         changes_made = False
 
         if changes_made == False and available_amount - remove_amount == 0:
-            conn.execute("DELETE FROM storage WHERE id = ?", item_id)
+            conn.execute("DELETE FROM storage WHERE id = (?)", (item_id,))
             changes_made = True
         elif changes_made == False and available_amount - remove_amount > 0:
             new_amount = available_amount - remove_amount
-            conn.execute("UPDATE storage SET amount = ? WHERE id = ?", (new_amount, item_id))
+            conn.execute("UPDATE storage SET amount = (?) WHERE id = (?)", (new_amount, item_id))
             changes_made = True
 
         if changes_made == True:
