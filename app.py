@@ -54,7 +54,7 @@ def add_item():
 
     # Check if inputs are of allowed types
     try:
-        int(amount)
+        amount = int(amount)
     except ValueError:
         flash("Amount must be a number.", "danger")
         return redirect("/")
@@ -65,16 +65,35 @@ def add_item():
 
     # Write item details to database
     conn = db_connect(db)
-    conn.execute(
-        "INSERT INTO storage (item_name, amount, unit) VALUES (?, ?, ?)",
-        (item, amount, unit)
-    )
+    cur = conn.cursor()
+
+    # check if item entry exists with same name
+    app.logger.debug(f"Checking if item with name {item} exists")
+    existing_item = cur.execute("SELECT id, amount FROM storage WHERE item_name = (?) COLLATE NOCASE", (item,)).fetchone()
+
+    if existing_item is not None:
+        existing_id = existing_item[0]
+        existing_amount = existing_item[1]
+
+        app.logger.debug(f"Item with id {existing_id} found with {existing_amount} in stock - adding to exisiting entry")
+
+        new_amount = existing_amount + amount
+
+        conn.execute("UPDATE storage SET amount = (?) WHERE id = (?)", (new_amount, existing_id))
+        flash(f"Added {amount} to {item}", "primary")
+
+    else:
+        app.logger.debug("No item with same name found - creating new entry")
+        conn.execute(
+            "INSERT INTO storage (item_name, amount, unit) VALUES (?, ?, ?)",
+            (item, amount, unit)
+        )
+        flash(f"Item {item} added with {amount} {unit}", "primary")
 
     conn.commit()
     conn.close()
 
     # Acknolegde success and return to root
-    flash(f"Item {item} added with {amount} {unit}", "primary")
     return redirect("/")
 
 @app.route("/remove_item", methods=["GET", "POST"])
