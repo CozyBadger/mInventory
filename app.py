@@ -93,6 +93,11 @@ def remove_item():
 
         app.logger.debug(f"Item info fetched: {item_details}")
 
+        # check if item ID has been tampered with
+        if item_details == []:
+            flash(f"Item with ID {item_id} does not exist", "danger")
+            return redirect("/")
+
         return render_template("remove_item.html", item_details=format_items(item_details)[0])
 
     # Handling POST requests
