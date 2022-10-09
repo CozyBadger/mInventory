@@ -31,7 +31,7 @@ def read_all_items():
 
 @app.get("/items/{item_id}")
 def read_item(item_id: int):
-    item = {"One": "item"}
+    item = {"item_id": item_id}
     return item
 
 
@@ -65,7 +65,7 @@ def read_all_locations():
 
 @app.get("/locations/{location_id}")
 def read_location(location_id: int):
-    location = {"One": "location"}
+    location = {"location_id": location_id}
     return location
 
 
