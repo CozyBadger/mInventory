@@ -1,6 +1,5 @@
 # Python Virtual Env
 .venv
-.faenv
 __pycache__
 flask_session
 
