@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 
 # local imports
-from model import Item, Location
+from models import Item, Location
 
 
 app = FastAPI()
