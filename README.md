@@ -1,4 +1,5 @@
 # (WIP!) mInventory
+Refactor for FastAPI
 A simple application to manage an inventory
 
 ## Run local development environment
@@ -15,18 +16,16 @@ TODO: create script to automate db stuff
 `$ sudo apt install python3.8-venv`
 
 * within the repo directory run\
-`$ python -m venv .venv`
+`$ python -m venv .faenv`
 
 * source the virtual environment\
-`$ . .venv/bin/activate`
+`$ . .faenv/bin/activate`
 
 * install requirements\
 `$ pip install -r requirements.txt`
 
 * start local http server\
-`$ flask run`\
-or\
-`$ flask --debug run`
+TODO!
 
 * leave the virtual environment when needed\
 `$ deactivate`
