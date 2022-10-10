@@ -1,40 +1,52 @@
 # public imports
-from typing import Union
+from typing import List
 
-from fastapi import FastAPI
-from pydantic import BaseModel
+from fastapi import Depends, FastAPI, HTTPException
+from sqlalchemy.orm import Session
 
 # local imports
-from models import Item, Location
+import crud, models, schemas
+from database import SessionLocal, engine
 
+
+models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
+# Dependency
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
 
 @app.get("/")
-def read_root():
-    items = read_all_items()
-    locations = read_all_locations()
-    return items, locations
+def read_root(db: Session=Depends(get_db)):
+    items = read_all_items(db=db)
+    return items
 
 
-@app.post("/items/create")
-def create_item(item: Item):
-    return item
+@app.post("/items/", response_model=schemas.Item)
+def create_item(item: schemas.ItemCreate, db: Session=Depends(get_db)):
+    return crud.create_item(db=db, item=item)
 
 
-@app.get("/items/all")
-def read_all_items():
-    all_items = {"All": "Items"}
+@app.get("/items/", response_model=List[schemas.Item])
+def read_all_items(db: Session=Depends(get_db)):
+    all_items = crud.get_all_items(db)
     return all_items
 
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int):
-    item = {"item_id": item_id}
-    return item
+@app.get("/items/{item_id}", response_model=schemas.Item)
+def read_item(item_id: int, db: Session=Depends(get_db)):
+    db_item = crud.get_item(db, item_id=item_id)
+    if db_item is None:
+        raise HTTPException(status_code=404, detail="Item not found")
+    return db_item
 
-
+''' keeping for later
 @app.put("/items/{item_id}")
 def update_item(item_id: int, item: Item):
     entry = {
@@ -46,11 +58,9 @@ def update_item(item_id: int, item: Item):
     }
     return entry
 
-
 @app.delete("/items/{item_id}")
 def delete_item(item_id: int):
     return {"Item": "deleted"}
-
 
 @app.post("/locations/create")
 def create_location(description: str):
@@ -68,7 +78,6 @@ def read_location(location_id: int):
     location = {"location_id": location_id}
     return location
 
-
 @app.put("/locations/{location_id}")
 def update_location(location_id: int, location: Location):
     entry = {
@@ -81,3 +90,4 @@ def update_location(location_id: int, location: Location):
 @app.delete("/locations/{location_id}")
 def delete_location(location_id: int):
     return {"Location": "deleted"}
+'''

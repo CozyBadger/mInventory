@@ -15,12 +15,12 @@ class ItemCreate(ItemBase):
 
 class Item(ItemBase):
     id: int
-    location_id: int
 
     class Config:
         orm_mode = True
 
 
+''' keeping for later
 class LocationBase(BaseModel):
     description: str
 
@@ -35,3 +35,4 @@ class Location(LocationBase):
 
     class Config:
         orm_mode = True
+'''

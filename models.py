@@ -13,6 +13,7 @@ class Item(Base):
     description = Column(String, index=True)
     amount = Column(Integer)
     unit = Column(String)
+    ''' keeing for later
     location_id = Column(Integer, ForeignKey("locations.id"))
 
     location = relationship("Locations", back_populates="items")
@@ -25,3 +26,4 @@ class Location(Base):
     description = Column(String, index=True)
 
     items = relationship("Item", back_populates="location")
+    '''
