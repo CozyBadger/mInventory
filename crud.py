@@ -12,11 +12,18 @@ def create_item(db: Session, item: schemas.ItemCreate):
 
 
 def get_item(db: Session, item_id: int):
-    return db.query(models.Item).filter(models.User.id == item_id).first()
+    return db.query(models.Item).filter(models.Item.id == item_id).first()
 
 
 def get_all_items(db: Session):
     return db.query(models.Item).all()
+
+
+def update_item(db: Session, item_id: int, item: schemas.ItemBase):
+    db_item = db.query(models.Item).filter(models.Item.id == item_id)
+    db_item.update(item.dict())
+    db.commit()
+    return db_item.first()
 
 
 def create_location(db: Session):
