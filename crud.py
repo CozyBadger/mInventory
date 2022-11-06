@@ -26,6 +26,13 @@ def update_item(db: Session, item_id: int, item: schemas.ItemBase):
     return db_item.first()
 
 
+def delete_item(db: Session, item_id: int) -> None:
+    db_item = db.query(models.Item).filter(models.Item.id == item_id).first()
+    if db_item is not None:
+        db.delete(db_item)
+    db.commit()
+
+
 def create_location(db: Session):
     db_location = models.Location(description=schemas.LocationCreate)
     db.add(db_location)

@@ -52,6 +52,10 @@ def update_item(item_id: int, item: schemas.ItemBase, db: Session=Depends(get_db
     db_item = crud.update_item(db, item_id=item_id, item=item)
     return db_item
 
+@app.delete("/items/{item_id}", status_code=204)
+def delete_item(item_id: int, db: Session=Depends(get_db)) -> None:
+    crud.delete_item(db, item_id=item_id)
+
 ''' keeping for later
 @app.delete("/items/{item_id}")
 def delete_item(item_id: int):
