@@ -4,7 +4,7 @@ from typing import List
 from fastapi import Depends, FastAPI, Form, HTTPException, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from sqlalchemy.orm import Session
 
 # local imports
@@ -32,13 +32,15 @@ async def read_root(request: Request, db: Session=Depends(get_db)):
     return templates.TemplateResponse("index.html", {"request": request, "items": items})
 
 
-@app.post("/items/", response_model=schemas.Item)
-def create_item(description: schemas.Item.description = Form(), amount: schemas.Item.amount = Form(), unit: schemas.Item.unit = Form(), db: Session=Depends(get_db)):
+@app.post("/items/")
+def create_item(description: schemas.Item.description = Form(), amount: schemas.Item.amount = Form(), unit: schemas.Item.unit = Form(), db: Session=Depends(get_db)) -> RedirectResponse:
     item = {}
     item["description"] = description
     item["amount"] = amount
     item["unit"] = unit
-    return crud.create_item(db=db, item=item)
+
+    crud.create_item(db=db, item=item)
+    return RedirectResponse(url="/", status_code=303)
 
 
 @app.get("/items/", response_model=List[schemas.Item])
