@@ -8,10 +8,7 @@ Storage overview
 
 
 {% block main %}
-
-<h1>All Items</h1>
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#additem_modal" name="add_item">+ add item</button>
-<div class="modal" tabindex="-1" id=additem_modal>
+<div class="modal" tabindex="-1" id=addItemModal>
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
@@ -52,13 +49,52 @@ Storage overview
 		</div>
 	</div>
 </div>
+<div class="row justify-content-center">
+	<div class="col-md-4 mb-2">
+		<div>
+			<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addItemModal" name="addItem">+ add item</button>
+		</div>
+		{% if items is defined and items|length > 0 %}
+		<table class="table">
+			<thead>
+				<tr>
+					<th scope="col">Description</th>
+					<th scope="col">Amount</th>
+					<th scope="col">Unit</th>
+					<th scope="col"></th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for item in items %}
+				<tr>
+					<td>{{ item.id }} {{ item.description }}</td>
+					<td>{{ item.amount }}</td>
+					<td>{{ item.unit }}</td>
+					<td><a href="/items/{{ item.id }}" class="btn btn-secondary" role="button" onclick="sendDeleteRequest(event, '/items/{{ item.id }}')"><b>X</b></a>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+		{% else %}
+		<h4>Invetory is empty.</h4>
+		{% endif %}
+	</div>
 
 </div>
 
-<div class="col-md-4 mb-2">
-	{% for item in items %}
-	<h4>{{item.id}} {{item.description}} {{item.amount}} {{item.unit}}</h4>
-	{% endfor %}
-</div>
-
+<script>
+	function sendDeleteRequest(event, endpoint) {
+		var xhttp = new XMLHttpRequest();
+		event.preventDefault();
+		xhttp.open("DELETE", endpoint, true);
+		xhttp.onload = () => {
+			if (xhttp.readyState === xhttp.DONE) {
+				if (xhttp.status === 204) {
+					window.location.href = "/"
+				}
+			}
+		}
+		xhttp.send(null);
+	}
+</script>
 {% endblock %}
