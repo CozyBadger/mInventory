@@ -8,14 +8,13 @@ Storage overview
 
 
 {% block main %}
-<div class="modal" tabindex="-1" id=addItemModal>
+<div class="modal fade" tabindex="-1" id=addItemModal>
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
 				<h5 class="modal-title">Add item to storage</h5>
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
-			<!-- <form action="/items/" method="POST" enctype="application/x-www-form-urlencoded"> -->
 			<form action="/items/" method="POST" id="addItemForm" enctype="application/x-www-form-urlencoded">
 				<div class="modal-body">
 
@@ -49,6 +48,22 @@ Storage overview
 		</div>
 	</div>
 </div>
+
+<div class="modal fade" id="deleteItemModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h1 class="modal-title fs-5" id="exampleModalLabel">New message</h1>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+				<a href="/" class="btn btn-primary" role="button" id="confirmButton" name="confirmButton"><b>Yes</b></a>
+			</div>
+		</div>
+	</div>
+</div>
+
 <div class="row justify-content-center">
 	<div class="col-md-4 mb-2">
 		<div>
@@ -70,7 +85,7 @@ Storage overview
 					<td>{{ item.id }} {{ item.description }}</td>
 					<td>{{ item.amount }}</td>
 					<td>{{ item.unit }}</td>
-					<td><a href="/items/{{ item.id }}" class="btn btn-secondary" role="button" onclick="sendDeleteRequest(event, '/items/{{ item.id }}')"><b>X</b></a>
+					<td><button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#deleteItemModal" data-bs-item-id={{ item.id }} data-bs-item-descr={{ item.description }}><b>X</b></button>
 				</tr>
 				{% endfor %}
 			</tbody>
@@ -83,6 +98,7 @@ Storage overview
 </div>
 
 <script>
+	// Helper script to send an HTTP delete request
 	function sendDeleteRequest(event, endpoint) {
 		var xhttp = new XMLHttpRequest();
 		event.preventDefault();
@@ -96,5 +112,21 @@ Storage overview
 		}
 		xhttp.send(null);
 	}
+
+	// Prepopulate deleteItemModal with item information
+	const deleteItemModal= document.getElementById("deleteItemModal")
+	deleteItemModal.addEventListener("show.bs.modal", event => {
+		// Button that triggered the modal
+		const button = event.relatedTarget
+		// Extract info from data-bs-* attributes
+		const itemId = button.getAttribute("data-bs-item-id")
+		const itemDescr = button.getAttribute("data-bs-item-descr")
+		// Update the modal's content.
+		const modalTitle = deleteItemModal.querySelector(".modal-title")
+		const modalConfirmButton = deleteItemModal.querySelector("#confirmButton")
+
+		modalTitle.textContent = `Delete item ${itemDescr}?`
+		modalConfirmButton.setAttribute("onclick", `sendDeleteRequest(event, '/items/${itemId}')`)
+	})
 </script>
 {% endblock %}
