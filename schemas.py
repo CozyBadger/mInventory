@@ -3,18 +3,11 @@ from typing import List, Union
 from pydantic import BaseModel
 
 
-class ItemBase(BaseModel):
-    description: str
-    amount: float
-    unit: str
-
-
-class ItemCreate(ItemBase):
-    pass
-
-
-class Item(ItemBase):
-    id: int
+class Item(BaseModel):
+    id = int
+    description = str
+    amount = float
+    unit = str
 
     class Config:
         orm_mode = True
