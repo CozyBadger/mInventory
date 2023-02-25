@@ -1,7 +1,7 @@
 # (WIP!) mInventory
 Refactor for FastAPI
 
-A simple application to manage an inventory
+A simple application to manage a physical inventory
 
 ## Run local development environment
 ### Server
@@ -22,3 +22,6 @@ A simple application to manage an inventory
 
 * leave the virtual environment when needed\
 `$ deactivate`
+
+### App
+* API documentation under /docs#
