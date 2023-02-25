@@ -1,0 +1,4 @@
+- functional edit item modal
+- login capabilities
+- legacy deployment on aws
+- modernization
