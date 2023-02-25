@@ -8,7 +8,7 @@ Storage overview
 
 
 {% block main %}
-<div class="modal fade" tabindex="-1" id=addItemModal>
+<div class="modal fade" id="addItemModal" tabindex="-1" aria-labelledby="addItemModalLabel" aria-hidden="true">
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
@@ -49,7 +49,7 @@ Storage overview
 	</div>
 </div>
 
-<div class="modal fade" id="deleteItemModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="deleteItemModal" tabindex="-1" aria-labelledby="deleteItemModalLabel" aria-hidden="true">
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
@@ -58,7 +58,22 @@ Storage overview
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
-				<a href="/" class="btn btn-primary" role="button" id="confirmButton" name="confirmButton"><b>Yes</b></a>
+				<a href="/" class="btn btn-primary" role="button" id="deleteConfirmButton" name="deleteConfirmButton"><b>Yes</b></a>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="editItemModal" tabindex="-1" aria-labelledby="editItemModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h1 class="modal-title fs-5" id="editItemModalLabel">New message</h1>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+				<a href="/" class="btn btn-primary" role="button" id="editConfirmButton" name="editConfirmButton"><b>Yes</b></a>
 			</div>
 		</div>
 	</div>
@@ -73,6 +88,7 @@ Storage overview
 		<table class="table">
 			<thead>
 				<tr>
+					<th scope="col"></th>
 					<th scope="col">Description</th>
 					<th scope="col">Amount</th>
 					<th scope="col">Unit</th>
@@ -82,10 +98,11 @@ Storage overview
 			<tbody>
 				{% for item in items %}
 				<tr>
+					<td><button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteItemModal" data-bs-item-id={{ item.id }} data-bs-item-descr={{ item.description }}><b>&times;</b></button></td>
 					<td>{{ item.id }} {{ item.description }}</td>
 					<td>{{ item.amount }}</td>
 					<td>{{ item.unit }}</td>
-					<td><button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#deleteItemModal" data-bs-item-id={{ item.id }} data-bs-item-descr={{ item.description }}><b>X</b></button>
+					<td><button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#editItemModal" data-bs-item-id={{ item.id }} data-bs-item-descr={{ item.description }}><b>&#9998;</b></button></td>
 				</tr>
 				{% endfor %}
 			</tbody>
@@ -123,10 +140,10 @@ Storage overview
 		const itemDescr = button.getAttribute("data-bs-item-descr")
 		// Update the modal's content.
 		const modalTitle = deleteItemModal.querySelector(".modal-title")
-		const modalConfirmButton = deleteItemModal.querySelector("#confirmButton")
+		const modalDeleteConfirmButton = deleteItemModal.querySelector("#deleteConfirmButton")
 
 		modalTitle.textContent = `Delete item ${itemDescr}?`
-		modalConfirmButton.setAttribute("onclick", `sendDeleteRequest(event, '/items/${itemId}')`)
+		modalDeleteConfirmButton.setAttribute("onclick", `sendDeleteRequest(event, '/items/${itemId}')`)
 	})
 </script>
 {% endblock %}
