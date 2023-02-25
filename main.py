@@ -1,7 +1,7 @@
 # public imports
 from typing import List
 
-from fastapi import Depends, FastAPI, HTTPException, Request
+from fastapi import Depends, FastAPI, Form, HTTPException, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
@@ -10,7 +10,6 @@ from sqlalchemy.orm import Session
 # local imports
 import crud, models, schemas
 from database import SessionLocal, engine
-
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -34,7 +33,11 @@ async def read_root(request: Request, db: Session=Depends(get_db)):
 
 
 @app.post("/items/", response_model=schemas.Item)
-def create_item(item: schemas.ItemCreate, db: Session=Depends(get_db)):
+def create_item(description: schemas.Item.description = Form(), amount: schemas.Item.amount = Form(), unit: schemas.Item.unit = Form(), db: Session=Depends(get_db)):
+    item = {}
+    item["description"] = description
+    item["amount"] = amount
+    item["unit"] = unit
     return crud.create_item(db=db, item=item)
 
 
@@ -53,7 +56,7 @@ def read_item(item_id: int, db: Session=Depends(get_db)):
 
 
 @app.put("/items/{item_id}", response_model=schemas.Item)
-def update_item(item_id: int, item: schemas.ItemBase, db: Session=Depends(get_db)):
+def update_item(item_id: int, item: schemas.Item, db: Session=Depends(get_db)):
     db_item = crud.update_item(db, item_id=item_id, item=item)
     return db_item
 
