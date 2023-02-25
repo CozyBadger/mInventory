@@ -1,7 +1,10 @@
 # public imports
 from typing import List
 
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, Request
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+from fastapi.responses import HTMLResponse
 from sqlalchemy.orm import Session
 
 # local imports
@@ -12,6 +15,8 @@ from database import SessionLocal, engine
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+app.mount("/static", StaticFiles(directory="static"), name="static")
+templates = Jinja2Templates(directory="templates")
 
 # Dependency
 def get_db():
@@ -22,10 +27,10 @@ def get_db():
         db.close()
 
 
-@app.get("/")
-def read_root(db: Session=Depends(get_db)):
+@app.get("/", response_class=HTMLResponse)
+async def read_root(request: Request, db: Session=Depends(get_db)):
     items = read_all_items(db=db)
-    return items
+    return templates.TemplateResponse("index.html", {"request": request, "items": items})
 
 
 @app.post("/items/", response_model=schemas.Item)
@@ -57,10 +62,6 @@ def delete_item(item_id: int, db: Session=Depends(get_db)) -> None:
     crud.delete_item(db, item_id=item_id)
 
 ''' keeping for later
-@app.delete("/items/{item_id}")
-def delete_item(item_id: int):
-    return {"Item": "deleted"}
-
 @app.post("/locations/create")
 def create_location(description: str):
     return description
