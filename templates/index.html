@@ -20,9 +20,10 @@ Storage overview
 			</div>
 			<div class="modal-body">
 				<div class="mb-3">
-					<input autocomplete="off" class="form-control custom-drop-down" list="item-description" name="item" placeholder="item name or select" required type="text">
+					<label for="item-description" class="form-label">Item description</label>
+					<input autocomplete="off" class="form-control custom-drop-down" list="item-description" id="description" placeholder="enter or click for list" required type="text">
 					{% if items is defined and items|length > 0 %}
-					<datalist id="item-description">
+					<datalist id="item-description" open="open">
 						{% for item in items %}
 						<option value="{{ item.description }}">
 						{% endfor %}
@@ -31,10 +32,12 @@ Storage overview
 				</div>
 
 				<div class="mb-3">
-					<input class="form-control" name="amount" placeholder="amount" required type="text">
+					<label for="item-amount" class="form-label">amount</label>
+					<input class="form-control" id="item-amount" placeholder="1, 2.3, 4000" required type="text">
 				</div>
 				<div class="mb-3">
-					<input class="mb-3 form-control" name="unit" placeholder="unit" required type="text">
+					<label for="item-unit" class="form-label">unit</label>
+					<input class="form-control" id="item-unit" placeholder="L, kg, m, qm" required type="text">
 				</div>
 
 			</div>
