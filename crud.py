@@ -12,16 +12,17 @@ def create_item(db: Session, item: schemas.Item):
 
 
 def get_item(db: Session, item_id: int):
-    return db.query(models.Item).filter(models.Item.id == item_id).first()
-
+    db_item = db.query(models.Item).filter(models.Item.id == item_id).one()
+    return db_item
 
 def get_all_items(db: Session):
-    return db.query(models.Item).all()
+    db_items = db.query(models.Item).all()
+    return db_items
 
 
 def update_item(db: Session, item_id: int, item: schemas.Item):
     db_item = db.query(models.Item).filter(models.Item.id == item_id)
-    db_item.update(item.dict())
+    db_item.update(item)
     db.commit()
     return db_item.first()
 
