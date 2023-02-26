@@ -2,6 +2,7 @@
 Refactor for FastAPI
 
 A simple application to manage a physical inventory
+![Screenshot of app](./img/mInventory-screenshot.png)
 
 ## Run local development environment
 ### Server
