@@ -25,7 +25,6 @@ def get_db():
     finally:
         db.close()
 
-
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request, db: Session=Depends(get_db)):
     items = read_all_items(db=db)
@@ -57,10 +56,11 @@ def read_item(item_id: int, db: Session=Depends(get_db)):
     return db_item
 
 
-@app.put("/items/{item_id}", response_model=schemas.Item)
-def update_item(item_id: int, item: schemas.Item, db: Session=Depends(get_db)):
-    db_item = crud.update_item(db, item_id=item_id, item=item)
-    return db_item
+@app.put("/items/{item_id}")
+async def update_item(item_id: int, request: Request, db: Session=Depends(get_db)):
+    request_body = await request.json()
+    db_item = crud.update_item(db, item_id=item_id, item=request_body)
+    return RedirectResponse(url="/", status_code=303)
 
 @app.delete("/items/{item_id}", status_code=204)
 def delete_item(item_id: int, db: Session=Depends(get_db)) -> None:
