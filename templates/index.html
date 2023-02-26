@@ -101,7 +101,7 @@ Storage overview
 		<div class="row justify-content-end pb-3">
 			<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addItemModal" name="addItem">+ add item</button>
 		</div>
-		<table class="table striped">
+		<table class="table striped align-middle">
 			{% if items is defined and items|length > 0 %}
 			<thead>
 				<tr>
@@ -115,11 +115,11 @@ Storage overview
 			<tbody>
 				{% for item in items %}
 				<tr>
-					<td><button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteItemModal" data-bs-item-id={{ item.id }} data-bs-item-descr={{ item.description }}><b>&times;</b></button></td>
-					<td>{{ item.id }} {{ item.description }}</td>
+					<td><button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteItemModal" data-bs-item-id={{ item.id }} data-bs-item-descr={{ item.description }}><span class="mx-3"><i class="bi bi-trash"></i></span></button></td>
+					<td>{{ item.description }}</td>
 					<td>{{ item.amount }}</td>
 					<td>{{ item.unit }}</td>
-					<td><button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#editItemModal" data-bs-item-id={{ item.id }} data-bs-item-descr={{ item.description }} data-bs-item-amount={{ item.amount }} data-bs-item-unit={{ item.unit }}><b>&#9998;</b></button></td>
+					<td class="text-end"><button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#editItemModal" data-bs-item-id={{ item.id }} data-bs-item-descr={{ item.description }} data-bs-item-amount={{ item.amount }} data-bs-item-unit={{ item.unit }}><span class="mx-3"><i class="bi bi-pen"></i></span></button></td>
 				</tr>
 				{% endfor %}
 			</tbody>
@@ -165,7 +165,7 @@ function sendPutRequest(event, endpoint) {
 		},
 		body: JSON.stringify(formJson)
 	})
-		.then(resp => { 
+		.then(resp => {
 			console.log(resp.status);
 			window.location.href = "/";
 		});
