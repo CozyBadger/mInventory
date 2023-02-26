@@ -75,7 +75,8 @@ Storage overview
 				<div class="modal-body">
 					<div class="mb-3">
 						<input id="id" name="id" value="id" type="hidden">
-						<input autocomplete="off" class="form-control custom-drop-down" list="description" id="description" name="description" value="description" required type="text">
+						<label for="description">description</label>
+						<input autocomplete="off" class="form-control custom-drop-down" list="description" id="description" name="description" value="description" required type="text" disabled>
 					</div>
 
 					<div class="mb-3">
@@ -107,7 +108,7 @@ Storage overview
 				<tr>
 					<th scope="col"></th>
 					<th scope="col">Description</th>
-					<th scope="col">Amount</th>
+					<th class="text-end" scope="col">Amount</th>
 					<th scope="col">Unit</th>
 					<th scope="col"></th>
 				</tr>
@@ -117,7 +118,7 @@ Storage overview
 				<tr>
 					<td><button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteItemModal" data-bs-item-id={{ item.id }} data-bs-item-descr={{ item.description }}><span class="mx-3"><i class="bi bi-trash"></i></span></button></td>
 					<td>{{ item.description }}</td>
-					<td>{{ item.amount }}</td>
+					<td class="text-end">{{ item.amount }}</td>
 					<td>{{ item.unit }}</td>
 					<td class="text-end"><button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#editItemModal" data-bs-item-id={{ item.id }} data-bs-item-descr={{ item.description }} data-bs-item-amount={{ item.amount }} data-bs-item-unit={{ item.unit }}><span class="mx-3"><i class="bi bi-pen"></i></span></button></td>
 				</tr>
