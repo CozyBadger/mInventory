@@ -81,11 +81,11 @@ Storage overview
 
 <div class="row justify-content-center">
 	<div class="col-md-4 mb-2">
-		<div>
+		<div class="row justify-content-end pb-3">
 			<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addItemModal" name="addItem">+ add item</button>
 		</div>
-		{% if items is defined and items|length > 0 %}
-		<table class="table">
+		<table class="table striped">
+			{% if items is defined and items|length > 0 %}
 			<thead>
 				<tr>
 					<th scope="col"></th>
@@ -106,10 +106,12 @@ Storage overview
 				</tr>
 				{% endfor %}
 			</tbody>
+			{% else %}
+			<thead>
+				<tr><th class="text-center" scope="col" colspan=5>Inventory is empty.</th><tr>
+			</thead>
+			{% endif %}
 		</table>
-		{% else %}
-		<h4>Inventory is empty.</h4>
-		{% endif %}
 	</div>
 
 </div>
