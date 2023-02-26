@@ -46,7 +46,7 @@ Storage overview
 				</div>
 			</form>
 		</div>
-	</div>
+	</div> 
 </div>
 
 <div class="modal fade" id="deleteItemModal" tabindex="-1" aria-labelledby="deleteItemModalLabel" aria-hidden="true">
@@ -65,18 +65,35 @@ Storage overview
 </div>
 
 <div class="modal fade" id="editItemModal" tabindex="-1" aria-labelledby="editItemModalLabel" aria-hidden="true">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h1 class="modal-title fs-5" id="editItemModalLabel">New message</h1>
-				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-				<a href="/" class="btn btn-primary" role="button" id="editConfirmButton" name="editConfirmButton">Save changes</a>
+	<form id="editItemForm" name="editItemForm" enctype="application/x-www-form-urlencoded">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h1 class="modal-title fs-5" id="editItemModalLabel">Edit item</h1>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					
+					<div class="mb-3">
+						<input autocomplete="off" class="form-control custom-drop-down" list="description" id="description" name="description" value="description" required type="text">
+					</div>
+
+					<div class="mb-3">
+						<label for="amount" class="form-label">amount</label>
+						<input class="form-control" id="amount" name="amount" placeholder="1, 2.3, 4000" required type="text">
+					</div>
+					<div class="mb-3">
+						<label for="unit" class="form-label">unit</label>
+						<input class="form-control" id="unit" name="unit" placeholder="L, kg, m, qm" required type="text">
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+					<a href="/" class="btn btn-primary" role="button" id="editConfirmButton" name="editConfirmButton">Save changes</a>
+				</div>
 			</div>
 		</div>
-	</div>
+	</form>
 </div>
 
 <div class="row justify-content-center">
@@ -117,53 +134,83 @@ Storage overview
 </div>
 
 <script>
-	// Helper script to send an HTTP delete request
-	function sendDeleteRequest(event, endpoint) {
-		var xhttp = new XMLHttpRequest();
-		event.preventDefault();
-		xhttp.open("DELETE", endpoint, true);
-		xhttp.onload = () => {
-			if (xhttp.readyState === xhttp.DONE) {
-				if (xhttp.status === 204) {
-					window.location.href = "/"
-				}
+// Helper script to send an HTTP DELETE request
+function sendDeleteRequest(event, endpoint) {
+	var xhttp = new XMLHttpRequest();
+	event.preventDefault();
+	console.log(event)
+	xhttp.open("DELETE", endpoint, true);
+	xhttp.onload = () => {
+		if (xhttp.readyState === xhttp.DONE) {
+			if (xhttp.status === 204) {
+				window.location.href = "/"
 			}
 		}
-		xhttp.send(null);
 	}
+	xhttp.send(null);
+}
+// Helper script to send an HTTP PUT request
+function sendPutRequest(event, endpoint) {
+	// Retrieve form input
+	const editForm = document.getElementById("editItemForm");
+	const formData = new FormData(editForm);
+	console.log(formData);
+	var xhttp = new XMLHttpRequest();
+	event.preventDefault();
+	params = {};
+	xhttp.open("PUT", endpoint, true);
+	xhttp.onload = () => {
+		console.log(xhttp.status)
+		if (xhttp.readyState === xhttp.DONE) {
+			if (xhttp.status === 303) {
+				window.location.href = "/"
+			}
+			if (xhttp.status === 422) {
+				window.alert("Incomplete request parameters");
+			}
+		}
+	}
+	xhttp.send();
+}
 
 	// Prepopulate deleteItemModal with item information
-	const deleteItemModal= document.getElementById("deleteItemModal")
+	const deleteItemModal= document.getElementById("deleteItemModal");
 	deleteItemModal.addEventListener("show.bs.modal", event => {
 		// Button that triggered the modal
-		const button = event.relatedTarget
+		const button = event.relatedTarget;
 		// Extract info from data-bs-* attributes
-		const itemId = button.getAttribute("data-bs-item-id")
-		const itemDescr = button.getAttribute("data-bs-item-descr")
+		const itemId = button.getAttribute("data-bs-item-id");
+		const itemDescr = button.getAttribute("data-bs-item-descr");
 		// Update the modal's content.
-		const modalTitle = deleteItemModal.querySelector(".modal-title")
-		const modalDeleteConfirmButton = deleteItemModal.querySelector("#deleteConfirmButton")
+		const modalTitle = deleteItemModal.querySelector(".modal-title");
+		const modalDeleteConfirmButton = deleteItemModal.querySelector("#deleteConfirmButton");
 
-		modalTitle.textContent = `Delete item ${itemDescr}?`
-		modalDeleteConfirmButton.setAttribute("onclick", `sendDeleteRequest(event, '/items/${itemId}')`)
-	})
+		modalTitle.textContent = `Delete item ${itemDescr}?`;
+		modalDeleteConfirmButton.setAttribute("onclick", `sendDeleteRequest(event, '/items/${itemId}')`);
+	});
 
 	// Prepopulate editItemModal with item information
-	const deleteItemModal= document.getElementById("editItemModal")
-	deleteItemModal.addEventListener("show.bs.modal", event => {
+	const editItemModal= document.getElementById("editItemModal");
+	editItemModal.addEventListener("show.bs.modal", event => {
 		// Button that triggered the modal
-		const button = event.relatedTarget
+		const button = event.relatedTarget;
 		// Extract info from data-bs-* attributes
-		const itemId = button.getAttribute("data-bs-item-id")
-		const itemDescr = button.getAttribute("data-bs-item-descr")
-		const itemAmount= button.getAttribute("data-bs-item-amount")
-		const itemUnit= button.getAttribute("data-bs-item-unit")
+		const itemId = button.getAttribute("data-bs-item-id");
+		const itemDescr = button.getAttribute("data-bs-item-descr");
+		const itemAmount= button.getAttribute("data-bs-item-amount");
+		const itemUnit= button.getAttribute("data-bs-item-unit");
 		// Update the modal's content.
-		const modalTitle = deleteItemModal.querySelector(".modal-title")
-		const modalDeleteConfirmButton = deleteItemModal.querySelector("#deleteConfirmButton")
+		const modalTitle = editItemModal.querySelector(".modal-title");
+		const modalEditItemDescriptionInput = editItemModal.querySelector("#description");
+		const modalEditItemAmountInput = editItemModal.querySelector("#amount");
+		const modalEditItemUnitInput = editItemModal.querySelector("#unit");
+		const modalEditConfirmButton = editItemModal.querySelector("#editConfirmButton");
 
-		modalTitle.textContent = `Change item ${itemDescr}:`
-		modalDeleteConfirmButton.setAttribute("onclick", `sendDeleteRequest(event, '/items/${itemId}')`)
-	})
+		modalTitle.textContent = `Change item ${itemDescr}:`;
+		modalEditItemDescriptionInput.value = `${itemDescr}`;
+		modalEditItemAmountInput.value = `${itemAmount}`;
+		modalEditItemUnitInput.value = `${itemUnit}`;
+		modalEditConfirmButton.setAttribute("onclick", `sendPutRequest(event, '/items/${itemId}')`);
+	});
 </script>
 {% endblock %}
