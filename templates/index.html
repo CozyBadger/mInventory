@@ -101,6 +101,7 @@ Storage overview
 	<div class="col-md-4 mb-2">
 		<div class="row justify-content-end pb-3">
 			<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addItemModal" name="addItem">+ add item</button>
+			<input class="form-control" id="tableFilterInput" type="text" placeholder="Filter..."></input>
 		</div>
 		<table class="table table-striped align-middle">
 			{% if items is defined and items|length > 0 %}
@@ -113,7 +114,7 @@ Storage overview
 					<th scope="col"></th>
 				</tr>
 			</thead>
-			<tbody>
+			<tbody id="itemTable">
 				{% for item in items %}
 				<tr>
 					<td><button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteItemModal" data-bs-item-id={{ item.id }} data-bs-item-descr={{ item.description }}><span class="mx-2"><i class="bi bi-trash"></i></span></button></td>
@@ -214,5 +215,15 @@ function sendPutRequest(event, endpoint) {
 		modalEditItemUnitInput.value = `${itemUnit}`;
 		modalEditConfirmButton.setAttribute("onclick", `sendPutRequest(event, '/items/${itemId}')`);
 	});
+
+// Helper to make table searchable
+$(document).ready(function(){
+  $("#tableFilterInput").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#itemTable tr").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+});
 </script>
 {% endblock %}

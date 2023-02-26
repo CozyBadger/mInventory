@@ -1,4 +1,3 @@
-- searchable table
 - sortable table
 - login capabilities
 - split backend completely from frontend - FastAPI as API only + some static website / js to interact with API
