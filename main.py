@@ -2,9 +2,10 @@
 from typing import List
 
 from fastapi import Depends, FastAPI, Form, HTTPException, Request
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse, RedirectResponse
 from sqlalchemy.orm import Session
 
 # local imports
@@ -27,25 +28,27 @@ def get_db():
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request, db: Session=Depends(get_db)):
-    items = read_all_items(db=db)
+    items = crud.get_all_items(db)
     return templates.TemplateResponse("index.html", {"request": request, "items": items})
 
 
-@app.post("/items/")
+@app.post("/items/", response_model=schemas.Item)
 def create_item(description: schemas.Item.description = Form(), amount: schemas.Item.amount = Form(), unit: schemas.Item.unit = Form(), db: Session=Depends(get_db)) -> RedirectResponse:
     item = {}
     item["description"] = description
     item["amount"] = amount
     item["unit"] = unit
 
-    crud.create_item(db=db, item=item)
-    return RedirectResponse(url="/", status_code=303)
+    item = crud.create_item(db=db, item=item)
+    json_item = jsonable_encoder(item)
+    return JSONResponse(content=json_item)
 
 
 @app.get("/items/", response_model=List[schemas.Item])
 def read_all_items(db: Session=Depends(get_db)):
     all_items = crud.get_all_items(db)
-    return all_items
+    json_items = jsonable_encoder(all_items)
+    return JSONResponse(content=json_items) 
 
 
 @app.get("/items/{item_id}", response_model=schemas.Item)
@@ -53,12 +56,14 @@ def read_item(item_id: int, db: Session=Depends(get_db)):
     db_item = crud.get_item(db, item_id=item_id)
     if db_item is None:
         raise HTTPException(status_code=404, detail="Item not found")
-    return db_item
+    json_compatible_item_data = jsonable_encoder(db_item)
+    return JSONResponse(content=json_compatible_item_data)
 
 
-@app.put("/items/{item_id}")
+@app.put("/items/{item_id}", response_model=schemas.Item)
 async def update_item(item_id: int, request: Request, db: Session=Depends(get_db)):
     request_body = await request.json()
+    print(request_body)
     db_item = crud.update_item(db, item_id=item_id, item=request_body)
     return RedirectResponse(url="/", status_code=303)
 

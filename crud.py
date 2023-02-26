@@ -12,7 +12,8 @@ def create_item(db: Session, item: schemas.Item):
 
 
 def get_item(db: Session, item_id: int):
-    db_item = db.query(models.Item).filter(models.Item.id == item_id).one()
+    db_item = db.query(models.Item).filter(models.Item.id == item_id).first()
+    print(db_item.id)
     return db_item
 
 def get_all_items(db: Session):
