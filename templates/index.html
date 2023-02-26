@@ -102,7 +102,7 @@ Storage overview
 					<td>{{ item.id }} {{ item.description }}</td>
 					<td>{{ item.amount }}</td>
 					<td>{{ item.unit }}</td>
-					<td><button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#editItemModal" data-bs-item-id={{ item.id }} data-bs-item-descr={{ item.description }}><b>&#9998;</b></button></td>
+					<td><button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#editItemModal" data-bs-item-id={{ item.id }} data-bs-item-descr={{ item.description }} data-bs-item-amount={{ item.amount }} data-bs-item-unit={{ item.unit }}><b>&#9998;</b></button></td>
 				</tr>
 				{% endfor %}
 			</tbody>
@@ -145,6 +145,24 @@ Storage overview
 		const modalDeleteConfirmButton = deleteItemModal.querySelector("#deleteConfirmButton")
 
 		modalTitle.textContent = `Delete item ${itemDescr}?`
+		modalDeleteConfirmButton.setAttribute("onclick", `sendDeleteRequest(event, '/items/${itemId}')`)
+	})
+
+	// Prepopulate editItemModal with item information
+	const deleteItemModal= document.getElementById("editItemModal")
+	deleteItemModal.addEventListener("show.bs.modal", event => {
+		// Button that triggered the modal
+		const button = event.relatedTarget
+		// Extract info from data-bs-* attributes
+		const itemId = button.getAttribute("data-bs-item-id")
+		const itemDescr = button.getAttribute("data-bs-item-descr")
+		const itemAmount= button.getAttribute("data-bs-item-amount")
+		const itemUnit= button.getAttribute("data-bs-item-unit")
+		// Update the modal's content.
+		const modalTitle = deleteItemModal.querySelector(".modal-title")
+		const modalDeleteConfirmButton = deleteItemModal.querySelector("#deleteConfirmButton")
+
+		modalTitle.textContent = `Change item ${itemDescr}:`
 		modalDeleteConfirmButton.setAttribute("onclick", `sendDeleteRequest(event, '/items/${itemId}')`)
 	})
 </script>
