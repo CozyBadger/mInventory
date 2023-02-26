@@ -102,36 +102,37 @@ Storage overview
 		<div class="row justify-content-end pb-3">
 			<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addItemModal" name="addItem">+ add item</button>
 		</div>
-		<table class="table table-striped table-sm align-middle" id="itemTable">
-			{% if items is defined and items|length > 0 %}
-			<thead>
-				<tr>
-					<th class="th-sm" scope="col"></th>
-					<th class="th-sm" scope="col"><i class="bi bi-box-seam"></i></th>
-					<th class="text-end th-sm" scope="col"><i class="bi bi-stack"></i></th>
-					<th class="th-sm" scope="col"><i class="bi bi-droplet-half"></i></th>
-					<th class="th-sm" scope="col"></th>
-				</tr>
-			</thead>
-			<tbody id="itemTableBody">
-				{% for item in items %}
-				<tr>
-					<td><button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteItemModal" data-bs-item-id={{ item.id }} data-bs-item-descr={{ item.description }}><span class="mx-2"><i class="bi bi-trash"></i></span></button></td>
-					<td>{{ item.description }}</td>
-					<td class="text-end">{{ item.amount }}</td>
-					<td>{{ item.unit }}</td>
-					<td class="text-end"><button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#editItemModal" data-bs-item-id={{ item.id }} data-bs-item-descr={{ item.description }} data-bs-item-amount={{ item.amount }} data-bs-item-unit={{ item.unit }}><span class="mx-2"><i class="bi bi-pen"></i></span></button></td>
-				</tr>
-				{% endfor %}
-			</tbody>
-			{% else %}
-			<thead>
-				<tr><th class="text-center" scope="col" colspan=5>Inventory is empty.</th><tr>
-			</thead>
-			{% endif %}
-		</table>
+		<div class="table-responsive">
+			<table class="table table-striped table-sm align-middle dt-responsive" id="itemTable">
+				{% if items is defined and items|length > 0 %}
+				<thead>
+					<tr>
+						<th class="th-sm" scope="col"></th>
+						<th class="th-sm" scope="col"><i class="bi bi-box-seam"></i></th>
+						<th class="text-end th-sm" scope="col"><i class="bi bi-stack"></i></th>
+						<th class="th-sm" scope="col"><i class="bi bi-droplet-half"></i></th>
+						<th class="th-sm" scope="col"></th>
+					</tr>
+				</thead>
+				<tbody id="itemTableBody">
+					{% for item in items %}
+					<tr>
+						<td><button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteItemModal" data-bs-item-id={{ item.id }} data-bs-item-descr={{ item.description }}><span class="mx-2"><i class="bi bi-trash"></i></span></button></td>
+						<td>{{ item.description }}</td>
+						<td class="text-end">{{ item.amount }}</td>
+						<td>{{ item.unit }}</td>
+						<td class="text-end"><button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#editItemModal" data-bs-item-id={{ item.id }} data-bs-item-descr={{ item.description }} data-bs-item-amount={{ item.amount }} data-bs-item-unit={{ item.unit }}><span class="mx-2"><i class="bi bi-pen"></i></span></button></td>
+					</tr>
+					{% endfor %}
+				</tbody>
+				{% else %}
+				<thead>
+					<tr><th class="text-center" scope="col" colspan=5>Inventory is empty.</th><tr>
+				</thead>
+				{% endif %}
+			</table>
+		</div>
 	</div>
-
 </div>
 
 <script>
