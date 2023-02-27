@@ -63,7 +63,6 @@ def read_item(item_id: int, db: Session=Depends(get_db)):
 @app.put("/items/{item_id}", response_model=schemas.Item)
 async def update_item(item_id: int, request: Request, db: Session=Depends(get_db)):
     request_body = await request.json()
-    print(request_body)
     item = {}
     try:
         item["amount"] = schemas.Item.amount(request_body.get("amount"))
@@ -74,7 +73,8 @@ async def update_item(item_id: int, request: Request, db: Session=Depends(get_db
         raise HTTPException(status_code=403, detail="Forbidden")
     else:
         db_item = crud.update_item(db, item_id=item_id, item=item)
-    return RedirectResponse(url="/", status_code=303)
+        json_response = jsonable_encoder(db_item)
+    return JSONResponse(content=json_response)
 
 @app.delete("/items/{item_id}", status_code=204)
 def delete_item(item_id: int, db: Session=Depends(get_db)) -> None:
