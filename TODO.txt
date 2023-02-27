@@ -1,7 +1,9 @@
 - move toast message info to sessionStorage
 - refactor addItem modal in line with editItem modal
+- combine same item entries during add
+- combine same item entries during edit
+- add slider for amount during edit
 - login capabilities
-- split backend completely from frontend - FastAPI as API only + some static website / js to interact with API
 - legacy deployment on aws
 - modernization
 
