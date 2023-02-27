@@ -8,6 +8,62 @@ Storage overview
 
 
 {% block main %}
+<!-- MAIN TABLE -->
+<div class="row justify-content-center">
+	<div class="col-md-4 mb-2">
+		<div class="row justify-content-end pb-3">
+			<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addItemModal" name="addItem">+ add item</button>
+		</div>
+		<div class="table-responsive">
+			<table class="table table-striped table-sm align-middle dt-responsive" id="itemTable">
+				{% if items is defined and items|length > 0 %}
+				<thead>
+					<tr>
+						<th class="th-sm" scope="col"></th>
+						<th class="th-sm" scope="col"><i class="bi bi-box-seam"></i></th>
+						<th class="text-end th-sm" scope="col"><i class="bi bi-stack"></i></th>
+						<th class="th-sm" scope="col"><i class="bi bi-droplet-half"></i></th>
+						<th class="th-sm" scope="col"></th>
+					</tr>
+				</thead>
+				<tbody id="itemTableBody">
+					{% for item in items %}
+					<tr>
+						<td><button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteItemModal" data-bs-item-id={{ item.id }} data-bs-item-descr={{ item.description }}><span class="mx-2"><i class="bi bi-trash"></i></span></button></td>
+						<td>{{ item.description }}</td>
+						<td class="text-end">{{ item.amount }}</td>
+						<td>{{ item.unit }}</td>
+						<td class="text-end"><button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#editItemModal" data-bs-item-id={{ item.id }} data-bs-item-descr={{ item.description }} data-bs-item-amount={{ item.amount }} data-bs-item-unit={{ item.unit }}><span class="mx-2"><i class="bi bi-pen"></i></span></button></td>
+					</tr>
+					{% endfor %}
+				</tbody>
+				{% else %}
+				<thead>
+					<tr><th class="text-center" scope="col" colspan=5>Inventory is empty.</th><tr>
+				</thead>
+				{% endif %}
+			</table>
+		</div>
+	</div>
+		<script>
+			// MAIN TABLE DataTable CONFIGURATION
+			$(document).ready(function () {
+				var t = $('#itemTable').DataTable({
+					columnDefs: [
+						{
+							searchable: false,
+							orderable: false,
+							targets: [0,2,3,4],
+						},
+					],
+					order: [[1, 'asc']],
+				});
+			});
+		</script>
+</div>
+<!-- END MAIN TABLE -->
+
+<!-- MODAL TO ADD ITEM -->
 <div class="modal fade" id="addItemModal" tabindex="-1" aria-labelledby="addItemModalLabel" aria-hidden="true">
 	<div class="modal-dialog">
 		<div class="modal-content">
@@ -48,7 +104,9 @@ Storage overview
 		</div>
 	</div>
 </div>
+<!-- END ADD ITEM MODAL -->
 
+<!-- MODAL TO DELETE ITEM -->
 <div class="modal fade" id="deleteItemModal" tabindex="-1" aria-labelledby="deleteItemModalLabel" aria-hidden="true">
 	<div class="modal-dialog">
 		<div class="modal-content">
@@ -62,8 +120,43 @@ Storage overview
 			</div>
 		</div>
 	</div>
-</div>
+	<script>
+		// Prepopulate deleteItemModal form input values with item information
+		const deleteItemModal= document.getElementById("deleteItemModal");
+		deleteItemModal.addEventListener("show.bs.modal", event => {
+			// Button that triggered the modal
+			const button = event.relatedTarget;
+			// Extract info from data-bs-* attributes
+			const itemId = button.getAttribute("data-bs-item-id");
+			const itemDescr = button.getAttribute("data-bs-item-descr");
+			// Update the modal's content.
+			const modalTitle = deleteItemModal.querySelector(".modal-title");
+			const modalDeleteConfirmButton = deleteItemModal.querySelector("#deleteConfirmButton");
 
+			modalTitle.textContent = `Delete item ${itemDescr}?`;
+			modalDeleteConfirmButton.setAttribute("onclick", `sendDeleteRequest(event, '/items/${itemId}')`);
+		});
+
+		// Helper script to send an HTTP DELETE request
+		function sendDeleteRequest(event, endpoint) {
+			var xhttp = new XMLHttpRequest();
+			event.preventDefault();
+			console.log(event)
+			xhttp.open("DELETE", endpoint, true);
+			xhttp.onload = () => {
+				if (xhttp.readyState === xhttp.DONE) {
+					if (xhttp.status === 204) {
+						window.location.href = "/"
+					}
+				}
+			}
+			xhttp.send(null);
+		}
+	</script>
+</div>
+<!-- END DELETE ITEM MODAL -->
+
+<!-- MODAL TO EDIT ITEM -->
 <div class="modal fade" id="editItemModal" tabindex="-1" aria-labelledby="editItemModalLabel" aria-hidden="true">
 	<form id="editItemForm" name="editItemForm" enctype="application/x-www-form-urlencoded">
 		<div class="modal-dialog">
@@ -95,167 +188,100 @@ Storage overview
 			</div>
 		</div>
 	</form>
-</div>
+	<script>
+		// Prepopulate editItemModal with item information
+		const editItemModal= document.getElementById("editItemModal");
+		editItemModal.addEventListener("show.bs.modal", event => {
+			// Button that triggered the modal
+			const button = event.relatedTarget;
+			// Extract info from data-bs-* attributes
+			const itemId = button.getAttribute("data-bs-item-id");
+			const itemDescr = button.getAttribute("data-bs-item-descr");
+			const itemAmount= button.getAttribute("data-bs-item-amount");
+			const itemUnit= button.getAttribute("data-bs-item-unit");
+			// Get modal elements
+			const modalTitle = editItemModal.querySelector(".modal-title");
+			const modalEditItemIdInput = editItemModal.querySelector("#id");
+			const modalEditItemDescriptionInput = editItemModal.querySelector("#description");
+			const modalEditItemAmountInput = editItemModal.querySelector("#amount");
+			const modalEditItemUnitInput = editItemModal.querySelector("#unit");
+			const modalEditConfirmButton = editItemModal.querySelector("#editConfirmButton");
+			// Change modal elements contents
+			modalTitle.textContent = `Change item ${itemDescr}:`;
+			modalEditItemIdInput.value = `${itemId}`;
+			modalEditItemDescriptionInput.value = `${itemDescr}`;
+			modalEditItemAmountInput.value = `${itemAmount}`;
+			modalEditItemUnitInput.value = `${itemUnit}`;
+			modalEditConfirmButton.setAttribute("onclick", `sendPutRequest(event, '/items/${itemId}')`);
+		});
 
-<div class="row justify-content-center">
-	<div class="col-md-4 mb-2">
-		<div class="row justify-content-end pb-3">
-			<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addItemModal" name="addItem">+ add item</button>
-		</div>
-		<div class="table-responsive">
-			<table class="table table-striped table-sm align-middle dt-responsive" id="itemTable">
-				{% if items is defined and items|length > 0 %}
-				<thead>
-					<tr>
-						<th class="th-sm" scope="col"></th>
-						<th class="th-sm" scope="col"><i class="bi bi-box-seam"></i></th>
-						<th class="text-end th-sm" scope="col"><i class="bi bi-stack"></i></th>
-						<th class="th-sm" scope="col"><i class="bi bi-droplet-half"></i></th>
-						<th class="th-sm" scope="col"></th>
-					</tr>
-				</thead>
-				<tbody id="itemTableBody">
-					{% for item in items %}
-					<tr>
-						<td><button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteItemModal" data-bs-item-id={{ item.id }} data-bs-item-descr={{ item.description }}><span class="mx-2"><i class="bi bi-trash"></i></span></button></td>
-						<td>{{ item.description }}</td>
-						<td class="text-end">{{ item.amount }}</td>
-						<td>{{ item.unit }}</td>
-						<td class="text-end"><button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#editItemModal" data-bs-item-id={{ item.id }} data-bs-item-descr={{ item.description }} data-bs-item-amount={{ item.amount }} data-bs-item-unit={{ item.unit }}><span class="mx-2"><i class="bi bi-pen"></i></span></button></td>
-					</tr>
-					{% endfor %}
-				</tbody>
-				{% else %}
-				<thead>
-					<tr><th class="text-center" scope="col" colspan=5>Inventory is empty.</th><tr>
-				</thead>
-				{% endif %}
-			</table>
-		</div>
-	</div>
+		// Helper script to send an HTTP PUT request
+		function sendPutRequest(event, endpoint) {
+			// Retrieve form input
+			const editForm = document.getElementById("editItemForm");
+			const formData = new FormData(editForm);
+			const formJson = Object.fromEntries(formData.entries());
+			// Prevent reloading
+			event.preventDefault();
+			// Make the request 
+			fetch(endpoint, {
+				method: "PUT",
+				headers: {
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify(formJson)
+			})
+			// Check response from backend
+				.then(resp => {
+					console.log(resp.status)
+					if (resp.status != 200) {
+						popToastMessage(title="Error", status=resp.status, content=resp.statusText);
+					} else {
+						popToastMessage(title="Success", status=resp.status, content="Item updated");
+						//window.location.href = "/";
+					}
+				});
+		}
+	</script>
 </div>
+<!-- END OF EDIT ITEM MODAL -->
 
+<!-- TOAST MESSAGE -->
 <div class="toast-container position-fixed bottom-0 end-0 p-3">
 	<div id="toastMessage" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
 		<div class="toast-header">
 			<!--<img src="..." class="rounded me-2" alt="...">-->
-			<strong class="me-auto">Oops...</strong>
+			<strong class="me-auto" id="toastTitle"></strong>
 			<!--<small>11 mins ago</small>-->
 			<button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
 		</div>
 		<div class="toast-body" id="toastMessageContent">
 		</div>
 	</div>
-</div>
-
-
-<script>
-	// Make table a DataTable
-	$(document).ready(function () {
-		var t = $('#itemTable').DataTable({
-			columnDefs: [
-				{
-					searchable: false,
-					orderable: false,
-					targets: [0,2,3,4],
-				},
-			],
-			order: [[1, 'asc']],
-		});
-	});
-
-	// Helper script to send an HTTP DELETE request
-	function sendDeleteRequest(event, endpoint) {
-		var xhttp = new XMLHttpRequest();
-		event.preventDefault();
-		console.log(event)
-		xhttp.open("DELETE", endpoint, true);
-		xhttp.onload = () => {
-			if (xhttp.readyState === xhttp.DONE) {
-				if (xhttp.status === 204) {
-					window.location.href = "/"
+	<script>
+		// HELPER TO TRIGGER TOAST MESSAGE
+		function popToastMessage(title="Note", status=undefined, content=undefined) {
+			console.log(`Title: ${title}`)
+			console.log(status)
+			console.log(content)
+			const toastMessage = document.getElementById("toastMessage");
+			const toastMessageContent = toastMessage.querySelector("#toastMessageContent");
+			const toastMessageTitle = toastMessage.querySelector("#toastTitle");
+			toastMessageTitle.innerHTML = `${title}`
+			if (status != 200) {
+				if (content === undefined) {
+					toastMessageContent.innerHTML = `Request returned ${status}`;
+				} else {
+					toastMessageContent.innerHTML = `Request returned ${status} ${content}`;
 				}
+			} else {
+				toastMessageContent.innerHTML = `${content}`;
 			}
+			const toast = new bootstrap.Toast(toastMessage);
+			toast.show();
 		}
-		xhttp.send(null);
-	}
-	// Helper script to send an HTTP PUT request
-	function sendPutRequest(event, endpoint) {
-		// Retrieve form input
-		const editForm = document.getElementById("editItemForm");
-		const formData = new FormData(editForm);
-		const formJson = Object.fromEntries(formData.entries());
-		console.log(formJson)
-		event.preventDefault();
+	</script>
+</div>
+<!-- END TOAST MESSAGE -->
 
-		fetch(endpoint, {
-			method: "PUT",
-			headers: {
-				"Content-Type": "application/json"
-			},
-			body: JSON.stringify(formJson)
-		})
-			.then(resp => {
-				if (resp.status != 200) {
-					popToastMessage(resp.status, resp.statusText);
-				}
-			});
-	}
-
-	function popToastMessage(status, content=undefined) {
-		const toastMessage = document.getElementById("toastMessage")
-		const toastMessageContent = toastMessage.querySelector("#toastMessageContent")
-		if (content === undefined) {
-			toastMessageContent.innerHTML = `Request returned ${status}` 
-		} else {
-			toastMessageContent.innerHTML = `Request returned ${status} ${content}` 
-		}
-		const toast = new bootstrap.Toast(toastMessage)
-		toast.show()
-	}
-
-	// Prepopulate deleteItemModal with item information
-	const deleteItemModal= document.getElementById("deleteItemModal");
-	deleteItemModal.addEventListener("show.bs.modal", event => {
-		// Button that triggered the modal
-		const button = event.relatedTarget;
-		// Extract info from data-bs-* attributes
-		const itemId = button.getAttribute("data-bs-item-id");
-		const itemDescr = button.getAttribute("data-bs-item-descr");
-		// Update the modal's content.
-		const modalTitle = deleteItemModal.querySelector(".modal-title");
-		const modalDeleteConfirmButton = deleteItemModal.querySelector("#deleteConfirmButton");
-
-		modalTitle.textContent = `Delete item ${itemDescr}?`;
-		modalDeleteConfirmButton.setAttribute("onclick", `sendDeleteRequest(event, '/items/${itemId}')`);
-	});
-
-	// Prepopulate editItemModal with item information
-	const editItemModal= document.getElementById("editItemModal");
-	editItemModal.addEventListener("show.bs.modal", event => {
-		// Button that triggered the modal
-		const button = event.relatedTarget;
-		// Extract info from data-bs-* attributes
-		const itemId = button.getAttribute("data-bs-item-id");
-		const itemDescr = button.getAttribute("data-bs-item-descr");
-		const itemAmount= button.getAttribute("data-bs-item-amount");
-		const itemUnit= button.getAttribute("data-bs-item-unit");
-		// Get modal elements
-		const modalTitle = editItemModal.querySelector(".modal-title");
-		const modalEditItemIdInput = editItemModal.querySelector("#id");
-		const modalEditItemDescriptionInput = editItemModal.querySelector("#description");
-		const modalEditItemAmountInput = editItemModal.querySelector("#amount");
-		const modalEditItemUnitInput = editItemModal.querySelector("#unit");
-		const modalEditConfirmButton = editItemModal.querySelector("#editConfirmButton");
-
-		// Change modal elements contents
-		modalTitle.textContent = `Change item ${itemDescr}:`;
-		modalEditItemIdInput.value = `${itemId}`;
-		modalEditItemDescriptionInput.value = `${itemDescr}`;
-		modalEditItemAmountInput.value = `${itemAmount}`;
-		modalEditItemUnitInput.value = `${itemUnit}`;
-		modalEditConfirmButton.setAttribute("onclick", `sendPutRequest(event, '/items/${itemId}')`);
-	});
-
-</script>
 {% endblock %}
