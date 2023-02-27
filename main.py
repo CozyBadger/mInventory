@@ -64,7 +64,16 @@ def read_item(item_id: int, db: Session=Depends(get_db)):
 async def update_item(item_id: int, request: Request, db: Session=Depends(get_db)):
     request_body = await request.json()
     print(request_body)
-    db_item = crud.update_item(db, item_id=item_id, item=request_body)
+    item = {}
+    try:
+        item["amount"] = schemas.Item.amount(request_body.get("amount"))
+        item["id"] = schemas.Item.id(request_body.get("id"))
+        item["description"] = schemas.Item.description(request_body.get("description"))
+        item["unit"] = schemas.Item.unit(request_body.get("unit"))
+    except ValueError as e:
+        raise HTTPException(status_code=403, detail="Forbidden")
+    else:
+        db_item = crud.update_item(db, item_id=item_id, item=item)
     return RedirectResponse(url="/", status_code=303)
 
 @app.delete("/items/{item_id}", status_code=204)
