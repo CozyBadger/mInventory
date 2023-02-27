@@ -146,7 +146,7 @@ Storage overview
 			xhttp.onload = () => {
 				if (xhttp.readyState === xhttp.DONE) {
 					if (xhttp.status === 204) {
-						window.location.href = "/"
+						window.location.href = "/?toastSuccess=1"
 					}
 				}
 			}
@@ -233,12 +233,13 @@ Storage overview
 			})
 			// Check response from backend
 				.then(resp => {
-					console.log(resp.status)
+					console.log(resp.status);
+					status = resp.status;
+					text = resp.statusText;
 					if (resp.status != 200) {
-						popToastMessage(title="Error", status=resp.status, content=resp.statusText);
+						popToastMessage(title="Error", status=status, content=text);
 					} else {
-						popToastMessage(title="Success", status=resp.status, content="Item updated");
-						//window.location.href = "/";
+						window.location.href = `/?toastSuccess=1`;
 					}
 				});
 		}
@@ -259,6 +260,13 @@ Storage overview
 		</div>
 	</div>
 	<script>
+		// POP TOAST MESSAGE WHEN DEFINED IN QUERY STRING PARAMS
+		const { search } = window.location;
+		const toastSuccess = (new URLSearchParams(search)).get('toastSuccess');
+		if (toastSuccess === '1') {
+			// The page was just reloaded, display the toast:
+			popToastMessage(title="Success", status=200, content="Operation successful");
+		}
 		// HELPER TO TRIGGER TOAST MESSAGE
 		function popToastMessage(title="Note", status=undefined, content=undefined) {
 			console.log(`Title: ${title}`)
