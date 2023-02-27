@@ -135,6 +135,20 @@ Storage overview
 	</div>
 </div>
 
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+	<div id="toastMessage" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+		<div class="toast-header">
+			<!--<img src="..." class="rounded me-2" alt="...">-->
+			<strong class="me-auto">Oops...</strong>
+			<!--<small>11 mins ago</small>-->
+			<button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+		</div>
+		<div class="toast-body" id="toastMessageContent">
+		</div>
+	</div>
+</div>
+
+
 <script>
 	// Make table a DataTable
 	$(document).ready(function () {
@@ -182,9 +196,22 @@ Storage overview
 			body: JSON.stringify(formJson)
 		})
 			.then(resp => {
-				console.log(resp.status);
-				window.location.href = "/";
+				if (resp.status != 200) {
+					popToastMessage(resp.status, resp.statusText);
+				}
 			});
+	}
+
+	function popToastMessage(status, content=undefined) {
+		const toastMessage = document.getElementById("toastMessage")
+		const toastMessageContent = toastMessage.querySelector("#toastMessageContent")
+		if (content === undefined) {
+			toastMessageContent.innerHTML = `Request returned ${status}` 
+		} else {
+			toastMessageContent.innerHTML = `Request returned ${status} ${content}` 
+		}
+		const toast = new bootstrap.Toast(toastMessage)
+		toast.show()
 	}
 
 	// Prepopulate deleteItemModal with item information
