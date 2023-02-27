@@ -1,3 +1,5 @@
+- move toast message info to sessionStorage
+- refactor addItem modal in line with editItem modal
 - login capabilities
 - split backend completely from frontend - FastAPI as API only + some static website / js to interact with API
 - legacy deployment on aws
