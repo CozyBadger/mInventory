@@ -42,7 +42,7 @@ def create_item(description: schemas.Item.description = Form(), amount: schemas.
     item = crud.create_item(db=db, item=item)
     # json_item = jsonable_encoder(item) # leaving in to switch back to later
     # return JSONResponse(content=json_item)
-    return RedirectResponse("/", status_code=status.HTTP_303_SEE_OTHER)
+    return RedirectResponse("/?toastSuccess=1", status_code=status.HTTP_303_SEE_OTHER)
 
 
 @app.get("/items/", response_model=List[schemas.Item])
