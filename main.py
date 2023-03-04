@@ -1,7 +1,7 @@
 # public imports
 from typing import List
 
-from fastapi import Depends, FastAPI, Form, HTTPException, Request
+from fastapi import Depends, FastAPI, Form, HTTPException, Request, status
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -40,8 +40,9 @@ def create_item(description: schemas.Item.description = Form(), amount: schemas.
     item["unit"] = unit
 
     item = crud.create_item(db=db, item=item)
-    json_item = jsonable_encoder(item)
-    return JSONResponse(content=json_item)
+    # json_item = jsonable_encoder(item) # leaving in to switch back to later
+    # return JSONResponse(content=json_item)
+    return RedirectResponse("/", status_code=status.HTTP_303_SEE_OTHER)
 
 
 @app.get("/items/", response_model=List[schemas.Item])
